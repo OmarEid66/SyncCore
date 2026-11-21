@@ -1,0 +1,5 @@
+cfo_est=-209124
+nco_ftw=-53535744
+actual_cfo_hz=-1562500.00
+matlab_cfo_hz=-1558095.22
+valid_sample_idx=210
