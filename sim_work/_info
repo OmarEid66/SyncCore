@@ -1,0 +1,293 @@
+m255
+K4
+z2
+!s99 nomlopt
+!s11f vlog 2021.1 2021.01, Jan 19 2021
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dE:/SiClash/New folder/STR_Block
+T_opt
+!s110 1795455572
+VRM^_oj`cW_kL0dk8??PLA3
+04 10 4 work tb_str_top fast 0
+=1-40c2ba415e56-6b047a53-3e6-5980
+!s124 OEM100
+o-quiet -auto_acc_if_foreign -work sim_work
+Z1 tCvgOpt 0
+n@_opt
+OL;O;2021.1;73
+vfarrow_channel
+Z2 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
+Z3 DXx4 work 7 str_pkg 0 22 <mVDk<P46HI>F?>dfAHI42
+Z4 !s110 1795455561
+!i10b 1
+!s100 D]4;XJd@0zEezAh=U8MKD0
+IFR8:7?eh@_C<LnFh;L2@I2
+S1
+R0
+Z5 w1795455554
+Z6 8rtl/farrow_interpolator.sv
+Z7 Frtl/farrow_interpolator.sv
+!i122 0
+L0 27 175
+Z8 VDg1SIo80bB@j0V0VzS_@n1
+Z9 OL;L;2021.1;73
+r1
+!s85 0
+31
+Z10 !s108 1795455561.000000
+Z11 !s107 tb/tb_str_top.sv|rtl/str_top.sv|rtl/str_output_register.sv|rtl/timing_pi_controller.sv|rtl/gardner_ted.sv|rtl/timing_sample_scheduler.sv|rtl/farrow_interpolator.sv|rtl/timing_phase_accumulator.sv|rtl/str_input_buffer.sv|rtl/str_pkg.sv|
+Z12 !s90 -sv|-work|sim_work|-lint|rtl/str_pkg.sv|rtl/str_input_buffer.sv|rtl/timing_phase_accumulator.sv|rtl/farrow_interpolator.sv|rtl/timing_sample_scheduler.sv|rtl/gardner_ted.sv|rtl/timing_pi_controller.sv|rtl/str_output_register.sv|rtl/str_top.sv|tb/tb_str_top.sv|
+!i113 0
+Z13 o-sv -work sim_work -lint -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R1
+vfarrow_interpolator
+R2
+R3
+R4
+!i10b 1
+!s100 e6hgojZ[zIZ2?VIBUik7B2
+IfIJ;OM@k5h<[@Oz2<Jm6B1
+S1
+R0
+R5
+R6
+R7
+!i122 0
+L0 204 89
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+vgardner_ted
+R2
+R3
+R4
+!i10b 1
+!s100 Z?RijFJJjzOOVPAe@i]bE2
+I]JZ^WnO>mZ2Cb=7=i:M]O0
+S1
+R0
+w1795450217
+8rtl/gardner_ted.sv
+Frtl/gardner_ted.sv
+!i122 0
+L0 23 56
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+vstr_input_buffer
+R2
+R4
+!i10b 1
+!s100 Gc82C[MYQ9Te>DXJ3bRW_2
+IjU]3PU5BMXXISKcIOlHDD3
+S1
+R0
+Z14 w1795447969
+8rtl/str_input_buffer.sv
+Frtl/str_input_buffer.sv
+!i122 0
+L0 20 59
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+vstr_output_register
+R2
+R4
+!i10b 1
+!s100 @gNMGZZ0k7??:[Qj9iI;J3
+INR;7TS0cHG45UBTSL4mja3
+S1
+R0
+R14
+8rtl/str_output_register.sv
+Frtl/str_output_register.sv
+!i122 0
+L0 20 31
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+Xstr_pkg
+R2
+R4
+!i10b 1
+!s100 e^oA`c_274djn<bU_M=zB2
+I<mVDk<P46HI>F?>dfAHI42
+S1
+R0
+w1795451335
+8rtl/str_pkg.sv
+Frtl/str_pkg.sv
+!i122 0
+L0 19 0
+V<mVDk<P46HI>F?>dfAHI42
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+vstr_top
+R2
+R3
+R4
+!i10b 1
+!s100 Fc]ODL04;lhOG]g:0_=Q[2
+Izf[P>PIWb]L8f`Ej=5[?h1
+S1
+R0
+R14
+8rtl/str_top.sv
+Frtl/str_top.sv
+!i122 0
+L0 22 155
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+vtb_str_top
+R2
+R3
+R4
+!i10b 1
+!s100 ;Q1AcJ?`W[eKFdSaB;=b20
+I[@:iIG4@C^77bbT08;5NV2
+S1
+R0
+R14
+8tb/tb_str_top.sv
+Ftb/tb_str_top.sv
+!i122 0
+L0 30 177
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+vtiming_phase_accumulator
+R2
+R3
+R4
+!i10b 1
+!s100 z>l2Bo^ON:N2c?6_hJiFk2
+IJ<YPJX5JkcJd]?=iVz3Ah1
+S1
+R0
+R14
+8rtl/timing_phase_accumulator.sv
+Frtl/timing_phase_accumulator.sv
+!i122 0
+L0 30 137
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+vtiming_pi_controller
+R2
+R3
+R4
+!i10b 1
+!s100 Q^2Ni3SlL>?YYOH9DcFO11
+I[7`QEVEG]AWb3o79Aa^8A1
+S1
+R0
+w1795449797
+8rtl/timing_pi_controller.sv
+Frtl/timing_pi_controller.sv
+!i122 0
+L0 28 88
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1
+vtiming_sample_scheduler
+R2
+R4
+!i10b 1
+!s100 JL2ED8W=^:G1YIJ9iMILQ2
+I?i04]g7V6S4_TdaHj8>Me1
+S1
+R0
+R14
+8rtl/timing_sample_scheduler.sv
+Frtl/timing_sample_scheduler.sv
+!i122 0
+L0 21 61
+R8
+R9
+r1
+!s85 0
+31
+R10
+R11
+R12
+!i113 0
+R13
+R1

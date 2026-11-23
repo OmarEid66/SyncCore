@@ -1,0 +1,68 @@
+#-----------------------------------------------------------
+# Vivado v2018.2 (64-bit)
+# SW Build 2258646 on Thu Jun 14 20:03:12 MDT 2018
+# IP Build 2256618 on Thu Jun 14 22:10:49 MDT 2018
+# Start of session at: Mon Nov 23 19:46:02 2026
+# Process ID: 20876
+# Current directory: E:/SiClash/New folder/STR_Block
+# Command line: vivado.exe -mode batch -source vivado/report_timing_checkpoints.tcl
+# Log file: E:/SiClash/New folder/STR_Block/vivado.log
+# Journal file: E:/SiClash/New folder/STR_Block\vivado.jou
+#-----------------------------------------------------------
+source vivado/report_timing_checkpoints.tcl
+# open_checkpoint vivado/reports/post_route.dcp
+Command: open_checkpoint vivado/reports/post_route.dcp
+
+Starting open_checkpoint Task
+
+Time (s): cpu = 00:00:00 ; elapsed = 00:00:00.088 . Memory (MB): peak = 238.711 ; gain = 0.000
+INFO: [Netlist 29-17] Analyzing 249 Unisim elements for replacement
+INFO: [Netlist 29-28] Unisim Transformation completed in 0 CPU seconds
+INFO: [Project 1-479] Netlist was created with Vivado 2018.2
+INFO: [Device 21-403] Loading part xc7a35tcsg324-1
+INFO: [Project 1-570] Preparing netlist for logic optimization
+INFO: [Timing 38-478] Restoring timing data from binary archive.
+INFO: [Timing 38-479] Binary timing data restore complete.
+INFO: [Project 1-856] Restoring constraints from binary archive.
+INFO: [Project 1-853] Binary constraint restore complete.
+Reading XDEF placement.
+Reading placer database...
+Reading XDEF routing.
+Read XDEF File: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.627 . Memory (MB): peak = 1154.617 ; gain = 0.000
+Restored from archive | CPU: 1.000000 secs | Memory: 0.000000 MB |
+Finished XDEF File Restore: Time (s): cpu = 00:00:01 ; elapsed = 00:00:00.627 . Memory (MB): peak = 1154.617 ; gain = 0.000
+INFO: [Project 1-111] Unisim Transformation Summary:
+No Unisim elements were transformed.
+
+INFO: [Project 1-604] Checkpoint was created with Vivado v2018.2 (64-bit) build 2258646
+open_checkpoint: Time (s): cpu = 00:01:10 ; elapsed = 00:01:28 . Memory (MB): peak = 1154.617 ; gain = 924.828
+# create_clock -name sys_clk -period 8.000 -waveform {0.000 4.000} [get_ports clk]
+WARNING: [Constraints 18-619] A clock with name 'sys_clk' already exists, overwriting the previous clock with the same name.
+# set_input_delay  -clock sys_clk -max 1.200 [get_ports {in_sample_i[*] in_sample_q[*] in_sample_valid}]
+# set_input_delay  -clock sys_clk -min 1.500 [get_ports {in_sample_i[*] in_sample_q[*] in_sample_valid}]
+# set_output_delay -clock sys_clk -max 1.200 [get_ports {out_sym_i[*] out_sym_q[*] out_sym_valid}]
+# set_output_delay -clock sys_clk -min 0.000 [get_ports {out_sym_i[*] out_sym_q[*] out_sym_valid}]
+# report_timing_summary -delay_type min_max -max_paths 10 -file vivado/reports/timing_125mhz_summary.rpt
+INFO: [Timing 38-91] UpdateTimingParams: Speed grade: -1, Delay Type: min_max.
+INFO: [Timing 38-191] Multithreading enabled for timing update using a maximum of 2 CPUs
+# set wns_125 [get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -setup]]
+# set whs_125 [get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -hold]]
+# puts "================================================================"
+================================================================
+# puts [format "  125 MHz (Checkpoint 7): WNS = %.3f ns | WHS = %.3f ns" $wns_125 $whs_125]
+  125 MHz (Checkpoint 7): WNS = 1.900 ns | WHS = 0.051 ns
+# puts "================================================================"
+================================================================
+# create_clock -name sys_clk -period 6.250 -waveform {0.000 3.125} [get_ports clk]
+WARNING: [Constraints 18-619] A clock with name 'sys_clk' already exists, overwriting the previous clock with the same name.
+# report_timing_summary -delay_type min_max -max_paths 10 -file vivado/reports/timing_160mhz_summary.rpt
+# set wns_160 [get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -setup]]
+# set whs_160 [get_property SLACK [get_timing_paths -max_paths 1 -nworst 1 -hold]]
+# puts "================================================================"
+================================================================
+# puts [format "  160 MHz (High-Perf)    : WNS = %.3f ns | WHS = %.3f ns" $wns_160 $whs_160]
+  160 MHz (High-Perf)    : WNS = 0.150 ns | WHS = 0.051 ns
+# puts "================================================================"
+================================================================
+# exit
+INFO: [Common 17-206] Exiting Vivado at Mon Nov 23 19:47:44 2026...

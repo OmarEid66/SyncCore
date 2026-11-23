@@ -1,0 +1,45 @@
+# vsim -c -work sim_work tb_str_top -do "run -all; quit -f" 
+# Start time: 19:39:31 on Nov 23,2026
+# ** Note: (vsim-3812) Design is being optimized...
+# //  Questa Sim-64
+# //  Version 2021.1 win64 Jan 19 2021
+# //
+# //  Copyright 1991-2021 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# Loading sv_std.std
+# Loading work.str_pkg(fast)
+# Loading work.tb_str_top(fast)
+# run -all
+# ======================================================================================================
+#   STAGE 5: BIT-EXACT SYSTEMVERILOG RTL VERIFICATION AT 200 MHz (14 MANDATORY TEST SCENARIOS)
+# ======================================================================================================
+# [PASS] t01_zero_offset_qpsk     | clks= 4777 | syms=1187 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t02_pos_offset_qpsk      | clks= 5977 | syms=1487 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t03_neg_offset_qpsk      | clks= 5977 | syms=1487 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t04_max_offset_qpsk      | clks= 5977 | syms=1487 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t05_qpsk_15db_stream     | clks= 5977 | syms=1487 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t06_16qam_15db_stream    | clks= 5977 | syms=1487 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t07_snr_0db_qpsk         | clks= 3977 | syms= 987 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t08_snr_10db_16qam       | clks= 4777 | syms=1187 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t09_snr_20db_16qam       | clks= 5977 | syms=1487 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t10_valid_gaps_qpsk      | clks= 8360 | syms=1187 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=19 clks
+# [PASS] t11_clk_ppm_pos200       | clks= 5977 | syms=1488 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t12_clk_ppm_neg500       | clks= 5977 | syms=1486 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t13_mid_stream_reset     | clks= 3983 | syms= 984 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# [PASS] t14_consecutive_bursts   | clks= 6369 | syms=1575 | valid_err=0 | data_err=0 | max_lsb_err=0 | first_out_ofs=15 clks
+# ======================================================================================================
+#   SUMMARY: 14 / 14 TESTS PASSED | Total Cycles Checked: 80059 | Total Symbols Checked: 19003
+# ======================================================================================================
+# ** Note: $finish    : tb/tb_str_top.sv(203)
+#    Time: 400297600 ps  Iteration: 0  Instance: /tb_str_top
+# End time: 19:39:40 on Nov 23,2026, Elapsed time: 0:00:09
+# Errors: 0, Warnings: 0

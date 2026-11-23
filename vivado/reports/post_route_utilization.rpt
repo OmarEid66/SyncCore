@@ -1,0 +1,38 @@
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2018.2 (win64) Build 2258646 Thu Jun 14 20:03:12 MDT 2018
+| Date         : Mon Nov 23 19:44:33 2026
+| Host         : DESKTOP-BP39RVB running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -file vivado/reports/post_route_utilization.rpt
+| Design       : str_top
+| Device       : 7a35tcsg324-1
+| Design State : Fully Placed
+--------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++----------------+--------------------------+------------+------------+---------+------+------+--------+--------+--------------+
+|    Instance    |          Module          | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP48 Blocks |
++----------------+--------------------------+------------+------------+---------+------+------+--------+--------+--------------+
+| str_top        |                    (top) |       1003 |        966 |       0 |   37 | 1037 |      0 |      0 |           10 |
+|   u_farrow     |      farrow_interpolator |        564 |        527 |       0 |   37 |  503 |      0 |      0 |            6 |
+|     (u_farrow) |      farrow_interpolator |          5 |          3 |       0 |    2 |   33 |      0 |      0 |            0 |
+|     u_farrow_i |           farrow_channel |        283 |        265 |       0 |   18 |  240 |      0 |      0 |            3 |
+|     u_farrow_q |         farrow_channel_0 |        276 |        259 |       0 |   17 |  230 |      0 |      0 |            3 |
+|   u_input_buf  |         str_input_buffer |        166 |        166 |       0 |    0 |  112 |      0 |      0 |            0 |
+|   u_nco        | timing_phase_accumulator |        155 |        155 |       0 |    0 |  139 |      0 |      0 |            0 |
+|   u_out_reg    |      str_output_register |          0 |          0 |       0 |    0 |   33 |      0 |      0 |            0 |
+|   u_pi         |     timing_pi_controller |        136 |        136 |       0 |    0 |  123 |      0 |      0 |            2 |
+|   u_sched      |  timing_sample_scheduler |          1 |          1 |       0 |    0 |  101 |      0 |      0 |            0 |
+|   u_ted        |              gardner_ted |          4 |          4 |       0 |    0 |   26 |      0 |      0 |            2 |
++----------------+--------------------------+------------+------------+---------+------+------+--------+--------+--------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+
