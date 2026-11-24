@@ -1,0 +1,5 @@
+FPGA Part: xc7a35tcsg324-1
+Clock Constraint Period: 8.000 ns (125.0 MHz)
+WNS: 0.151 ns
+TIMING_MET: YES
+FMAX_MHZ: 127.40476493820869
