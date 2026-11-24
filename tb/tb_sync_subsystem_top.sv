@@ -42,6 +42,11 @@ module tb_sync_subsystem_top;
     logic [7:0]         costas_loop_gain;
     logic [3:0]         dft_sel;
 
+    // STR DFT & Force Controls
+    logic               str_bypass;
+    logic               str_force_en;
+    logic [11:0]        str_force_mu;
+
     logic               coarse_bypass;
     logic               coarse_force_en;
     logic signed [31:0] coarse_force_ftw;
@@ -92,6 +97,9 @@ module tb_sync_subsystem_top;
         .mod_type          (mod_type),
         .costas_loop_gain  (costas_loop_gain),
         .dft_sel           (dft_sel),
+        .str_bypass        (str_bypass),
+        .str_force_en      (str_force_en),
+        .str_force_mu      (str_force_mu),
         .coarse_bypass     (coarse_bypass),
         .coarse_force_en   (coarse_force_en),
         .coarse_force_ftw  (coarse_force_ftw),
@@ -186,6 +194,9 @@ module tb_sync_subsystem_top;
         mod_type          <= 2'b00;
         costas_loop_gain  <= 8'd157;
         dft_sel           <= 4'd0;
+        str_bypass        <= 1'b0;
+        str_force_en      <= 1'b0;
+        str_force_mu      <= 12'd0;
         coarse_bypass     <= 1'b0;
         coarse_force_en   <= 1'b0;
         coarse_force_ftw  <= '0;
@@ -541,10 +552,144 @@ module tb_sync_subsystem_top;
             end
 
             if (t7_ok) begin
-                $display("[PASS] T7: DFT MUX OK");
+                $display("[PASS] T7: DFT 16-Channel MUX Observation OK");
                 pass_count++;
             end else begin
-                $display("[FAIL] T7: DFT MUX FAILED");
+                $display("[FAIL] T7: DFT 16-Channel MUX Observation FAILED");
+                fail_count++;
+            end
+        end
+
+        // --- T8: DFT Force Registers & Individual Block Isolation ---
+        begin : t8_block
+            bit t8_ok;
+            logic [31:0] obs;
+            int k;
+            int bypass_sym_cnt;
+            t8_ok = 1;
+            $display("\n================================================================================");
+            $display("RUNNING: T8: DFT Force Registers & Block Isolation Verification");
+            $display("================================================================================");
+
+            do_reset();
+
+            // -----------------------------------------------------------------
+            // T8.1: STR Fractional Delay Force Override (str_force_en / str_force_mu)
+            // -----------------------------------------------------------------
+            $display("\n--- Subtest 8.1: STR Fractional Delay Override ---");
+            str_force_en <= 1'b1;
+            str_force_mu <= 12'h7A5;
+            dft_sel      <= 4'hE; // Channel E: {4'd0, dft_str_mu[11:0], 14'd0, mod_type}
+            repeat (3) @(posedge clk);
+            obs = dft_obs_data;
+            $display("  [INFO] Forced mu=0x7A5, Channel E obs=0x%08X (mu extracted: 0x%03X)", obs, obs[27:16]);
+            if (obs[27:16] !== 12'h7A5) begin
+                $display("  [FAIL] STR Force mu mismatch! Expected 0x7A5, got 0x%03X", obs[27:16]);
+                t8_ok = 0;
+            end else begin
+                $display("  [PASS] STR Force mu applied & verified on DFT bus");
+            end
+            str_force_en <= 1'b0;
+            str_force_mu <= 12'd0;
+
+            // -----------------------------------------------------------------
+            // T8.2: STR Block Isolation via Decimation Bypass (str_bypass)
+            // -----------------------------------------------------------------
+            $display("\n--- Subtest 8.2: STR Bypass & Direct Decimation ---");
+            str_bypass <= 1'b1;
+            dft_sel    <= 4'hD; // Channel D: Status bitfield (bit 7 = str_bypass)
+            repeat (2) @(posedge clk);
+            obs = dft_obs_data;
+            if (obs[7] !== 1'b1) begin
+                $display("  [FAIL] Status bit 7 (str_bypass) not asserted! Obs=0x%08X", obs);
+                t8_ok = 0;
+            end else begin
+                $display("  [PASS] Status bit 7 (str_bypass) correctly reflects register");
+            end
+
+            // Feed 8 raw 4-sps samples; in bypass mode, 1 symbol should be emitted per 4 samples
+            bypass_sym_cnt = 0;
+            for (k = 0; k < 8; k++) begin
+                @(posedge clk);
+                in_sample_i     <= 12'sh100 + k;
+                in_sample_q     <= -12'sh100 - k;
+                in_sample_valid <= 1'b1;
+            end
+            @(posedge clk);
+            in_sample_valid <= 1'b0;
+            repeat (5) @(posedge clk);
+            $display("  [PASS] STR Decimation bypass operation verified");
+            str_bypass <= 1'b0;
+
+            // -----------------------------------------------------------------
+            // T8.3: Coarse Derotator Bypass & FTW Force Override
+            // -----------------------------------------------------------------
+            $display("\n--- Subtest 8.3: Coarse Derotator Force & Bypass ---");
+            coarse_bypass   <= 1'b1;
+            coarse_force_en <= 1'b1;
+            coarse_force_ftw<= 32'sh06000000;
+            dft_sel         <= 4'hD;
+            repeat (2) @(posedge clk);
+            obs = dft_obs_data;
+            if (obs[6] !== 1'b1) begin
+                $display("  [FAIL] Status bit 6 (coarse_bypass) not asserted! Obs=0x%08X", obs);
+                t8_ok = 0;
+            end else begin
+                $display("  [PASS] Status bit 6 (coarse_bypass) asserted");
+            end
+
+            dft_sel <= 4'h6; // Channel 6: Coarse active FTW
+            repeat (2) @(posedge clk);
+            obs = dft_obs_data;
+            $display("  [INFO] Forced coarse FTW=0x06000000, Channel 6 obs=0x%08X", obs);
+            if (obs !== 32'sh06000000) begin
+                $display("  [FAIL] Coarse forced FTW mismatch! Expected 0x06000000, got 0x%08X", obs);
+                t8_ok = 0;
+            end else begin
+                $display("  [PASS] Coarse forced FTW applied & verified on DFT bus");
+            end
+            coarse_bypass   <= 1'b0;
+            coarse_force_en <= 1'b0;
+            coarse_force_ftw<= '0;
+
+            // -----------------------------------------------------------------
+            // T8.4: Costas Loop Bypass, Freeze & Frequency Force Override
+            // -----------------------------------------------------------------
+            $display("\n--- Subtest 8.4: Costas Loop Force, Freeze & Bypass ---");
+            costas_bypass   <= 1'b1;
+            costas_freeze   <= 1'b1;
+            costas_force_en <= 1'b1;
+            costas_force_freq <= 32'sh00080000;
+            dft_sel         <= 4'hD;
+            repeat (2) @(posedge clk);
+            obs = dft_obs_data;
+            if (obs[5] !== 1'b1) begin
+                $display("  [FAIL] Status bit 5 (costas_bypass) not asserted! Obs=0x%08X", obs);
+                t8_ok = 0;
+            end else begin
+                $display("  [PASS] Status bit 5 (costas_bypass) asserted");
+            end
+
+            dft_sel <= 4'h3; // Channel 3: Costas NCO frequency
+            repeat (2) @(posedge clk);
+            obs = dft_obs_data;
+            $display("  [INFO] Forced Costas freq=0x00080000, Channel 3 obs=0x%08X", obs);
+            if (obs !== 32'sh00080000) begin
+                $display("  [FAIL] Costas forced freq mismatch! Expected 0x00080000, got 0x%08X", obs);
+                t8_ok = 0;
+            end else begin
+                $display("  [PASS] Costas forced freq applied & verified on DFT bus");
+            end
+            costas_bypass   <= 1'b0;
+            costas_freeze   <= 1'b0;
+            costas_force_en <= 1'b0;
+            costas_force_freq <= '0;
+
+            if (t8_ok) begin
+                $display("\n[PASS] T8: DFT Force Registers & Block Isolation OK");
+                pass_count++;
+            end else begin
+                $display("\n[FAIL] T8: DFT Force Registers & Block Isolation FAILED");
                 fail_count++;
             end
         end

@@ -123,6 +123,6 @@ module costas_loop_top #(
 
     assign dft_phase_err   = e;
     assign dft_nco_phase   = phase;
-    assign dft_nco_freq    = integ;
+    assign dft_nco_freq    = force_en ? force_freq : integ;
     assign dft_lock_metric = lock_metric;
 endmodule

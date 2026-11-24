@@ -34,9 +34,18 @@ module str_top
   input  logic signed [11:0] in_sample_q,
   input  logic               in_sample_valid,
 
+  // Optional DFT / Override inputs (default to 0 for backward compatibility)
+  input  logic               dft_force_en = 1'b0,
+  input  logic [11:0]        dft_force_mu = 12'd0,
+
   output logic signed [15:0] out_sym_i,
   output logic signed [15:0] out_sym_q,
-  output logic               out_sym_valid
+  output logic               out_sym_valid,
+
+  // DFT Observation outputs
+  output logic signed [17:0] dft_ted_err,
+  output logic [11:0]        dft_mu,
+  output logic [21:0]        dft_eta
 );
 
   // S0: Input buffer taps
@@ -48,6 +57,7 @@ module str_top
   logic [11:0]        mu_s2;
   logic               strobe_s2;
   logic               is_sym_s2;
+  logic [21:0]        nco_eta;
 
   // S8: Farrow -> Output register & Timing sample scheduler
   logic signed [15:0] farrow_y_i, farrow_y_q;
@@ -96,8 +106,12 @@ module str_top
     .pi_valid  (pi_valid),
     .mu_s2     (mu_s2),
     .strobe_s2 (strobe_s2),
-    .is_sym_s2 (is_sym_s2)
+    .is_sym_s2 (is_sym_s2),
+    .eta_out   (nco_eta)
   );
+
+  // MUX for manual fractional delay force override
+  wire [11:0] farrow_mu = dft_force_en ? dft_force_mu : mu_s2;
 
   // Stages S1-S8: Pipelined Cubic Lagrange Farrow Interpolator (Horner form)
   farrow_interpolator u_farrow (
@@ -111,7 +125,7 @@ module str_top
     .x0_q          (x0_q),
     .x1_q          (x1_q),
     .x2_q          (x2_q),
-    .mu_s2         (mu_s2),
+    .mu_s2         (farrow_mu),
     .strobe_s2     (strobe_s2),
     .is_sym_s2     (is_sym_s2),
     .y_i           (farrow_y_i),
@@ -174,5 +188,10 @@ module str_top
     .u_i_q22   (pi_u_i_q22),
     .pi_valid  (pi_valid)
   );
+
+  // DFT Observation Outputs
+  assign dft_ted_err = ted_err_q15;
+  assign dft_mu      = farrow_mu;
+  assign dft_eta     = nco_eta;
 
 endmodule

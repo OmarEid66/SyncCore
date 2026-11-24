@@ -31,11 +31,15 @@ module timing_phase_accumulator
   // Aligned outputs to farrow_interpolator (Stage S2)
   output logic [11:0]        mu_s2,
   output logic               strobe_s2,
-  output logic               is_sym_s2
+  output logic               is_sym_s2,
+
+  // DFT Observation tap
+  output logic [21:0]        eta_out
 );
 
   // NCO state registers
   logic [21:0]        eta_reg;
+  assign eta_out = eta_reg;
   logic               is_symbol_strobe;
 
   // Stage S15 precomputed feedback registers

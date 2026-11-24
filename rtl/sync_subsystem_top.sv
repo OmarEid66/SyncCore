@@ -89,11 +89,19 @@ module sync_subsystem_top #(
     input  logic [3:0]         dft_sel,          // 16-channel observation selector
 
     // =========================================================================
-    // Manual Override / Force Controls
+    // Manual Override / Force Registers for Block Isolation (Checkpoint 5)
     // =========================================================================
+    // --- STR Block Isolation Controls ---
+    input  logic               str_bypass,       // 1: Bypass STR (direct 4-sps decimation)
+    input  logic               str_force_en,     // 1: Force manual fractional delay mu
+    input  logic [11:0]        str_force_mu,     // Forced fractional delay value
+
+    // --- Coarse CFO & Derotator Isolation Controls ---
     input  logic               coarse_bypass,    // 1: Bypass coarse derotator (passthrough)
     input  logic               coarse_force_en,  // 1: Use coarse_force_ftw instead of estimated FTW
     input  logic signed [NCO_WIDTH-1:0] coarse_force_ftw, // Forced coarse FTW
+
+    // --- Costas Loop Isolation Controls ---
     input  logic               costas_bypass,    // 1: Bypass Costas derotator
     input  logic               costas_freeze,    // 1: Freeze Costas integrator (open-loop observe)
     input  logic               costas_force_en,  // 1: Force Costas NCO frequency
@@ -131,6 +139,27 @@ module sync_subsystem_top #(
     // --- STR outputs (1 sps, Q1.15) ---
     logic signed [15:0] str_sym_i, str_sym_q;
     logic               str_sym_valid;
+    logic signed [17:0] dft_str_ted_err;
+    logic [11:0]        dft_str_mu;
+    logic [21:0]        dft_str_eta;
+
+    // STR bypass decimation counter (for standalone block isolation)
+    logic [1:0] bypass_dec_cnt;
+    always_ff @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            bypass_dec_cnt <= 2'b00;
+        end else if (burst_start) begin
+            bypass_dec_cnt <= 2'b00;
+        end else if (in_sample_valid) begin
+            bypass_dec_cnt <= bypass_dec_cnt + 2'd1;
+        end
+    end
+    wire bypass_sym_strobe = in_sample_valid && (bypass_dec_cnt == 2'b00);
+
+    // Selected STR output: normal STR recovered symbols or bypassed raw samples
+    wire signed [15:0] active_str_sym_i = str_bypass ? {in_sample_i, 4'b0000} : str_sym_i;
+    wire signed [15:0] active_str_sym_q = str_bypass ? {in_sample_q, 4'b0000} : str_sym_q;
+    wire               active_str_valid = str_bypass ? bypass_sym_strobe       : str_sym_valid;
 
     // --- Coarse CFO estimator outputs ---
     logic signed [NCO_WIDTH-1:0] coarse_nco_ftw;
@@ -164,9 +193,14 @@ module sync_subsystem_top #(
         .in_sample_i     (in_sample_i),
         .in_sample_q     (in_sample_q),
         .in_sample_valid (in_sample_valid),
+        .dft_force_en    (str_force_en),
+        .dft_force_mu    (str_force_mu),
         .out_sym_i       (str_sym_i),
         .out_sym_q       (str_sym_q),
-        .out_sym_valid   (str_sym_valid)
+        .out_sym_valid   (str_sym_valid),
+        .dft_ted_err     (dft_str_ted_err),
+        .dft_mu          (dft_str_mu),
+        .dft_eta         (dft_str_eta)
     );
 
     // =========================================================================
@@ -226,9 +260,9 @@ module sync_subsystem_top #(
         .force_en         (coarse_force_en),
         .force_ftw        (derot_force_ftw),
         .bypass           (coarse_bypass),
-        .sample_i_in      (str_sym_i),         // 1 sps from STR
-        .sample_q_in      (str_sym_q),
-        .sample_valid_in  (str_sym_valid),
+        .sample_i_in      (active_str_sym_i),  // 1 sps from STR (or bypass)
+        .sample_q_in      (active_str_sym_q),
+        .sample_valid_in  (active_str_valid),
         .sample_i_out     (derot_sym_i),
         .sample_q_out     (derot_sym_q),
         .sample_valid_out (derot_sym_valid),
@@ -290,27 +324,31 @@ module sync_subsystem_top #(
     );
 
     // =========================================================================
-    // 6. DFT Observation MUX (16 channels)
+    // 6. DFT Observation MUX (16 channels) — Checkpoint 5 Specification
+    //    Channels 0-4 : Costas Loop fine tracking signals
+    //    Channels 5-8 : Coarse CFO & Derotator status & NCO phase
+    //    Channels 9-B : STR internal status (TED error, STR NCO phase/mu, symbols)
+    //    Channels C-F : Constellation, Status bitfield, Control, ASCII ID
     // =========================================================================
     always_comb begin
         case (dft_sel)
             4'h0: dft_obs_data = fine_cfo_est;
             4'h1: dft_obs_data = {{16{dft_costas_phase_err[15]}}, dft_costas_phase_err};
-            4'h2: dft_obs_data = dft_costas_nco_phase;
+            4'h2: dft_obs_data = dft_costas_nco_phase;                                // Fine NCO phase
             4'h3: dft_obs_data = dft_costas_nco_freq;
             4'h4: dft_obs_data = {16'd0, dft_costas_lock_metric};
             4'h5: dft_obs_data = {{8{coarse_cfo_est[23]}}, coarse_cfo_est};
-            4'h6: dft_obs_data = coarse_nco_ftw;
+            4'h6: dft_obs_data = coarse_active_ftw;                                  // Active Coarse Derotator FTW
             4'h7: dft_obs_data = coarse_det_metric;
-            4'h8: dft_obs_data = coarse_dft_phase;
-            4'h9: dft_obs_data = {out_sym_i, out_sym_q};
-            4'hA: dft_obs_data = {derot_sym_i, derot_sym_q};
-            4'hB: dft_obs_data = {str_sym_i, str_sym_q};          // STR output
-            4'hC: dft_obs_data = {{20{in_sample_i[11]}}, in_sample_i}; // Raw input I
-            4'hD: dft_obs_data = {27'd0, derot_active, lock_detect,
-                                  coarse_cfo_valid, preamble_detected, coarse_accum_busy};
-            4'hE: dft_obs_data = {16'd0, 14'd0, mod_type};
-            4'hF: dft_obs_data = 32'h55535452;                     // ID "USTR" (ASCII)
+            4'h8: dft_obs_data = coarse_dft_phase;                                    // Coarse Derotator NCO phase
+            4'h9: dft_obs_data = {{14{dft_str_ted_err[17]}}, dft_str_ted_err};       // Gardner TED error
+            4'hA: dft_obs_data = {10'd0, dft_str_eta};                                // STR NCO phase (eta UQ0.22)
+            4'hB: dft_obs_data = {str_sym_i, str_sym_q};                             // STR output recovered symbols
+            4'hC: dft_obs_data = {out_sym_i, out_sym_q};                             // Final synchronized symbols
+            4'hD: dft_obs_data = {24'd0, str_bypass, coarse_bypass, costas_bypass,
+                                  derot_active, lock_detect, coarse_cfo_valid, preamble_detected, coarse_accum_busy};
+            4'hE: dft_obs_data = {4'd0, dft_str_mu, 14'd0, mod_type};                // STR fractional delay (mu) & mod
+            4'hF: dft_obs_data = 32'h55535452;                                        // ID "USTR" (ASCII)
             default: dft_obs_data = 32'h0;
         endcase
     end

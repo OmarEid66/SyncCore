@@ -1,5 +1,6 @@
 # Simulation artifacts
 sim/work/
+sim/tb/
 sim/*.vcd
 sim/transcript
 sim/*.wlf
